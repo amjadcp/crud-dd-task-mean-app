@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    image: amjadcp/mean-backend:latest
+    container_name: mean-backend
+    restart: always
+    depends_on:
+      - mongo
+    expose:
+      - "8080"
+
+  frontend:
+    image: amjadcp/mean-frontend:latest
+    container_name: mean-frontend
+    restart: always
+    depends_on:
+      - backend
+    expose:
+      - "80"
+
+volumes:
+  mongo_data:
