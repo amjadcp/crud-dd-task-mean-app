@@ -1,12 +1,14 @@
 name: Build and Deploy to Production
 
 on:
-  workflow_dispatch:
-    
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
+  push:
+    branches:
+      - production
 
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -30,3 +32,13 @@ jobs:
           context: ./frontend
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/mean-frontend:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Deploy Containers
+        run: |
+          cd /home/debian/mean-app
+          docker-compose pull
+          docker-compose up -d
